@@ -5,6 +5,7 @@ import requests
 import os
 import sys
 import datetime
+import re
 import json
 import time
 from multiprocessing import Process
@@ -37,7 +38,7 @@ def do_actions():
             break
         else:
             # time.sleep(30)  # waitretry interval of 30 sec
-            time.sleep(2)  # waitretry interval DEBUG
+            time.sleep(2)  # waitretry interval **DEBUG**
 
 
 if __name__ == '__main__':
@@ -51,15 +52,27 @@ if __name__ == '__main__':
 
     # End process.
     action_process.terminate()
-    print("\nIF sucessfull connection DO JSON validation ELSE time out!\n")
+    print("\nIF successful connection DO JSON validation ELSE time out!\n")
     print("JSON request!\n", j)
 
 
-    bamboo_status = (y["status"])
+    bamboo_status =(y["status"])
     bamboo_build = (y["build"])
     bamboo_ver = (y["build"]["version"])
+    bamboo_validation = bamboo_status, bamboo_build, bamboo_ver
+    print("**Validation String=", bamboo_validation)
 
-    print("status=",bamboo_status, "build=", bamboo_build, "Ver=", bamboo_ver)
+    # bamboo_build = bamboo_build.find('19',11)
+    # print("\n", bamboo_build, "\n")
+
+#   Validate the build is up and populated
+    if bamboo_status == "UP" and \
+       bamboo_build != None and \
+       bamboo_ver != None:
+        print("Application", bamboo_build, "deployed successfully!\n")
+    else:
+        print("***Application Failed to Deploy Expected***",bamboo_validation)
+        sys.exit()
 
 
 
@@ -76,3 +89,4 @@ if __name__ == '__main__':
 # headers = {'Accept': 'application/json','content-type': 'application/json'}
 # snow_post_change_results = requests.post(url = snow_host + post_snow_change_request, headers = headers, auth=(snow_username, snow_password), json = change_data)
 # snow_post_change_results_json = snow_post_change_results.json()
+
